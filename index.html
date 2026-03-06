@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <!-- iOS viewport: viewport-fit=cover handles notch/Dynamic Island -->
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1a1209" />
+  <meta name="background-color" content="#1a1209" />
+
+  <!-- iOS PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Poetry" />
+
+  <!-- iOS Touch Icons -->
+  <link rel="apple-touch-icon" href="/pwa-72.png" />
+  <link rel="apple-touch-icon" sizes="72x72" href="/pwa-72.png" />
+  <link rel="apple-touch-icon" sizes="96x96" href="/pwa-96.png" />
+  <link rel="apple-touch-icon" sizes="128x128" href="/pwa-128.png" />
+  <link rel="apple-touch-icon" sizes="144x144" href="/pwa-144.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/pwa-152.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="/pwa-192.png" />
+  <link rel="apple-touch-icon" sizes="384x384" href="/pwa-384.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="/pwa-512.png" />
+
+  <!-- iOS Splash Screens (apple-touch-startup-image)
+         iOS ignores PWA manifest splash — these <link> tags are the ONLY way.
+         Sizes: physical pixels. Must match device exactly. -->
+  <!-- iPhone SE (2nd/3rd gen) -->
+  <link rel="apple-touch-startup-image" href="/splash-640x1136.png"
+    media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+  <!-- iPhone 8 / SE (1st gen) -->
+  <link rel="apple-touch-startup-image" href="/splash-750x1334.png"
+    media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+  <!-- iPhone 8 Plus -->
+  <link rel="apple-touch-startup-image" href="/splash-1242x2208.png"
+    media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <!-- iPhone X / XS / 11 Pro / 12 mini / 13 mini -->
+  <link rel="apple-touch-startup-image" href="/splash-1125x2436.png"
+    media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <!-- iPhone 12 / 13 / 14 -->
+  <link rel="apple-touch-startup-image" href="/splash-1170x2532.png"
+    media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <!-- iPhone 14 Plus / 13 Pro Max / 12 Pro Max -->
+  <link rel="apple-touch-startup-image" href="/splash-1284x2778.png"
+    media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <!-- iPhone 15 / 14 Pro -->
+  <link rel="apple-touch-startup-image" href="/splash-1179x2556.png"
+    media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <!-- iPhone 15 Plus / 14 Pro Max -->
+  <link rel="apple-touch-startup-image" href="/splash-1284x2778.png"
+    media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+
+  <!-- General Meta -->
+  <title>Poetry Assistant — Offline Tools for Verse</title>
+  <meta name="description"
+    content="A fully offline poetry toolkit: rhyme finder, syllable counter, poetic thesaurus, and poem workshop. No internet needed.">
+  <meta name="author" content="Poetry Assistant" />
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Poetry Assistant — Offline Tools for Verse" />
+  <meta property="og:description"
+    content="A fully offline poetry toolkit: rhyme finder, syllable counter, poetic thesaurus, and poem workshop. No internet needed." />
+  <meta property="og:image" content="/pwa-512.png" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Poetry Assistant — Offline Tools for Verse" />
+  <meta name="twitter:description"
+    content="A fully offline poetry toolkit: rhyme finder, syllable counter, poetic thesaurus, and poem workshop. No internet needed." />
+  <meta name="twitter:image" content="/pwa-512.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/pwa-512.png" />
+
+  <!-- Fonts: loaded from Google Fonts with offline fallback via service worker.
+         We use font-display:swap so text is always readable even if fonts haven't cached yet. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet" />
+
+  <!-- Inline critical CSS: dark splash background shown before JS loads.
+         This prevents a white flash on iPhone between native OS splash and React mount. -->
+  <style>
+    html,
+    body,
+    #root {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #1a1209;
+      /* safe-area-inset for iPhone notch / Dynamic Island / home bar */
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+    }
+
+    /* Prevent iOS rubber-band scroll from exposing background */
+    body {
+      overscroll-behavior: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

@@ -1,0 +1,216 @@
+/* Poetry Assistant - App Specific Styles */
+
+/* Ensure smooth scrolling on iOS */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent pull-to-refresh on mobile */
+html {
+  overscroll-behavior-y: none;
+  height: 100%;
+}
+
+/* Body should take full height */
+body {
+  min-height: 100%;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+}
+
+/* Custom focus styles */
+*:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* Input placeholder styling */
+::placeholder {
+  color: rgba(26, 18, 9, 0.4);
+  font-style: italic;
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(201, 151, 58, 0.3);
+  color: #1a1209;
+}
+
+/* CRITICAL: Prevent zoom on input focus for iOS - MUST be 16px */
+@media screen and (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px !important;
+    touch-action: manipulation;
+  }
+}
+
+/* Ensure inputs don't lose focus on mobile */
+input, textarea {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* Fix for iOS keyboard issues */
+.scroll-container {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Ensure content is scrollable when keyboard is open */
+  padding-bottom: 120px;
+}
+
+/* Animation for tab switching */
+.tab-content-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.tab-content-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Chip hover effect */
+.poetry-chip {
+  position: relative;
+  overflow: hidden;
+}
+
+.poetry-chip::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.poetry-chip:active::after {
+  width: 100%;
+  height: 100%;
+}
+
+/* Ornament styling */
+.ornament {
+  font-family: 'Playfair Display', Georgia, serif;
+  letter-spacing: 0.5em;
+}
+
+/* Tab button active indicator */
+.tab-btn {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.tab-btn span {
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tab-btn.active::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background: var(--rust);
+  border-radius: 2px;
+}
+
+/* Workshop button grid */
+.workshop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (min-width: 640px) {
+  .workshop-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .tab-btn span {
+    font-size: 12px;
+  }
+}
+
+/* iPhone notch support */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .safe-area-pt {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Fix for iOS Safari bottom bar */
+.tab-nav {
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+/* Ensure bottom nav doesn't cover content */
+.pb-28 {
+  padding-bottom: 7rem;
+}
+
+/* Custom scrollbar for webkit browsers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(201, 151, 58, 0.4);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(201, 151, 58, 0.6);
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Print styles */
+@media print {
+  .tab-nav,
+  .toast {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+  }
+}
+
+/* Fix for virtual keyboard on mobile */
+@media (max-height: 500px) {
+  .tab-nav {
+    position: relative;
+  }
+}

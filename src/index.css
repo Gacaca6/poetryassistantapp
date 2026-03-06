@@ -1,0 +1,235 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Poetry Assistant Theme - Parchment & Ink */
+    --background: 40 33% 94%;
+    --foreground: 30 50% 7%;
+    --card: 40 25% 90%;
+    --card-foreground: 30 50% 7%;
+    --popover: 40 33% 94%;
+    --popover-foreground: 30 50% 7%;
+    --primary: 30 50% 7%;
+    --primary-foreground: 40 33% 94%;
+    --secondary: 40 25% 90%;
+    --secondary-foreground: 30 50% 7%;
+    --muted: 40 20% 88%;
+    --muted-foreground: 30 20% 35%;
+    --accent: 40 25% 90%;
+    --accent-foreground: 30 50% 7%;
+    --destructive: 10 60% 35%;
+    --destructive-foreground: 40 33% 94%;
+    --border: 40 20% 85%;
+    --input: 40 20% 85%;
+    --ring: 42 55% 50%;
+    --radius: 0.5rem;
+    
+    /* Custom Poetry Colors */
+    --ink: #1a1209;
+    --parchment: #f5f0e8;
+    --gold: #c9973a;
+    --rust: #8b3a2a;
+    --sage: #4a6741;
+    --mist: #ede8dc;
+    
+    /* Sidebar */
+    --sidebar-background: 40 33% 94%;
+    --sidebar-foreground: 30 50% 7%;
+    --sidebar-primary: 30 50% 7%;
+    --sidebar-primary-foreground: 40 33% 94%;
+    --sidebar-accent: 40 25% 90%;
+    --sidebar-accent-foreground: 30 50% 7%;
+    --sidebar-border: 40 20% 85%;
+    --sidebar-ring: 42 55% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  body {
+    @apply bg-parchment text-ink font-body antialiased;
+    background: radial-gradient(ellipse at top left, rgba(201, 151, 58, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(139, 58, 42, 0.06) 0%, transparent 50%),
+                #f5f0e8;
+    min-height: 100vh;
+    min-height: 100dvh;
+    /* iPhone safe area support */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+  
+  /* iOS momentum scrolling */
+  .scroll-container {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+  
+  /* Touch targets for mobile */
+  button, input, select, textarea, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Prevent text selection on UI elements */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  /* Allow text selection on content */
+  .selectable {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}
+
+@layer components {
+  /* Poetry Assistant Components */
+  .poetry-card {
+    @apply bg-mist/50 rounded-lg p-4 border border-gold/20;
+  }
+  
+  .poetry-input {
+    @apply bg-parchment border-2 border-gold/30 rounded-md px-4 py-3 
+           font-body text-ink placeholder:text-ink/40
+           focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20
+           transition-all duration-200;
+  }
+  
+  .poetry-button {
+    @apply bg-ink text-parchment font-display font-semibold 
+           px-6 py-3 rounded-md shadow-md
+           active:scale-95 active:shadow-sm
+           transition-all duration-150
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+  
+  .poetry-button-secondary {
+    @apply bg-transparent text-ink border-2 border-ink/30 
+           font-display font-semibold px-6 py-3 rounded-md
+           hover:bg-ink/5 active:bg-ink/10
+           active:scale-95 transition-all duration-150;
+  }
+  
+  .poetry-chip {
+    @apply inline-flex items-center px-3 py-1.5 rounded-full text-sm
+           font-body cursor-pointer select-none
+           transition-all duration-150 active:scale-95;
+  }
+  
+  .poetry-chip-perfect {
+    @apply bg-sage/20 text-sage border border-sage/30 hover:bg-sage/30;
+  }
+  
+  .poetry-chip-near {
+    @apply bg-gold/20 text-gold border border-gold/30 hover:bg-gold/30;
+  }
+  
+  .poetry-chip-slant {
+    @apply bg-rust/20 text-rust border border-rust/30 hover:bg-rust/30;
+  }
+  
+  .ornament {
+    @apply flex items-center justify-center gap-2 text-gold/60 my-6;
+  }
+  
+  .ornament::before,
+  .ornament::after {
+    content: '';
+    @apply flex-1 h-px bg-gold/30;
+  }
+  
+  /* Tab Navigation */
+  .tab-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-parchment/95 backdrop-blur-md
+           border-t border-gold/20 safe-area-pb
+           flex justify-around items-center py-2 z-50;
+  }
+  
+  .tab-btn {
+    @apply flex flex-col items-center justify-center gap-1 px-4 py-2
+           text-ink/60 font-body text-xs
+           transition-all duration-200;
+  }
+  
+  .tab-btn.active {
+    @apply text-rust;
+  }
+  
+  .tab-btn.active .tab-icon {
+    @apply text-rust;
+  }
+  
+  /* Toast Notification */
+  .toast {
+    @apply fixed bottom-24 left-1/2 -translate-x-1/2 
+           bg-ink text-parchment px-4 py-2 rounded-full
+           font-body text-sm shadow-lg
+           animate-fade-in z-50;
+  }
+  
+  /* Safe area utilities for iPhone */
+  .safe-area-pt {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-pl {
+    padding-left: env(safe-area-inset-left);
+  }
+  
+  .safe-area-pr {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+@layer utilities {
+  /* Custom scrollbar for webkit browsers */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(201, 151, 58, 0.4);
+    border-radius: 3px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(201, 151, 58, 0.6);
+  }
+  
+  /* Hide scrollbar but keep functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
