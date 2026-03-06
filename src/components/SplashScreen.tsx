@@ -18,9 +18,8 @@ export default function SplashScreen({ onFinished }: SplashScreenProps) {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-background transition-opacity duration-500 ${
-        fadeOut ? 'opacity-0' : 'opacity-100'
-      }`}
+      className={`fixed inset-0 h-[100dvh] z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-500 pb-[env(safe-area-inset-bottom)] ${fadeOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
       style={{
         backgroundImage:
           'radial-gradient(ellipse at 15% 10%, hsla(37, 54%, 51%, 0.07) 0%, transparent 55%), radial-gradient(ellipse at 85% 90%, hsla(8, 55%, 35%, 0.05) 0%, transparent 55%)',
