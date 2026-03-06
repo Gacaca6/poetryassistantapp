@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react'
+import SplashScreen from './components/SplashScreen'
 import {
   Music, BookOpen, PenTool, Search,
   Copy, Check, Sparkles, AlignLeft,
@@ -27,70 +28,26 @@ interface ThesaurusEntry {
 
 // ─── Thesaurus data (module-level — never re-created) ─────────────────────────
 const THESAURUS_DB: Record<string, ThesaurusEntry> = {
-  // Emotions
   sad: { common: ['unhappy', 'sorrowful', 'dejected', 'melancholy', 'gloomy'], poetic: ['forlorn', 'woebegone', 'lachrymose', 'dolorous', 'plaintive'], vivid: ['tear-stained', 'heavy-hearted', 'shadow-cast', 'soul-weary', 'grief-burdened'], archaic: ['wan', 'doleful', 'rueful', 'wan-faced', 'heavy of heart'] },
   happy: { common: ['joyful', 'cheerful', 'content', 'delighted', 'pleased'], poetic: ['blissful', 'elated', 'jubilant', 'rapturous', 'exultant'], vivid: ['sun-bright', 'heart-light', 'dancing', 'radiant', 'golden'], archaic: ['gay', 'merry', 'light of heart', 'in good cheer', 'buoyant'] },
-  angry: { common: ['furious', 'enraged', 'irate', 'incensed', 'livid'], poetic: ['wrathful', 'indignant', 'inflamed', 'smoldering', 'tempestuous'], vivid: ['fire-eyed', 'blood-hot', 'thunder-browed', 'fist-clenched', 'storm-faced'], archaic: ['wroth', 'irate', 'choleric', 'in high dudgeon', 'sore displeased'] },
-  afraid: { common: ['scared', 'frightened', 'terrified', 'anxious', 'fearful'], poetic: ['trembling', 'aghast', 'horror-struck', 'appalled', 'pale with dread'], vivid: ['cold-shivering', 'shadow-cowering', 'heart-frozen', 'ghost-pale', 'stone-still'], archaic: ["afear'd", 'in a tremor', 'sore afraid', 'quaking', 'craven'] },
-  lonely: { common: ['solitary', 'isolated', 'alone', 'abandoned', 'forsaken'], poetic: ['desolate', 'bereft', 'forlorn', 'reclusive', 'exile-hearted'], vivid: ['hollow-hearted', 'echo-filled', 'ghost-walking', 'island-bound', 'crowd-lost'], archaic: ['companionless', 'friendless', 'sequestered', 'in solitude', 'unattended'] },
-  grief: { common: ['sorrow', 'sadness', 'heartache', 'anguish', 'mourning'], poetic: ['lamentation', 'melancholy', 'dolour', 'woe', 'bereavement'], vivid: ['hollow-chest', 'tear-river', 'soul-crack', 'silent-scream', 'weight-of-dark'], archaic: ['ruth', 'bale', 'dole', 'heaviness of heart', 'tribulation'] },
-  joy: { common: ['happiness', 'delight', 'pleasure', 'gladness', 'cheer'], poetic: ['rapture', 'bliss', 'ecstasy', 'jubilation', 'elation'], vivid: ['sun-burst', 'heart-leap', 'breath-catching', 'light-spilling', 'star-bright'], archaic: ['mirth', 'jollity', 'blithe', 'felicity', 'joviality'] },
-  love: { common: ['affection', 'devotion', 'adoration', 'fondness', 'tenderness'], poetic: ['amour', 'ardor', 'rapture', 'enchantment', 'besottedness'], vivid: ['heart-flame', 'soul-binding', 'star-crossed', 'deep-rooted', 'eternal'], archaic: ['courtship', 'wooing', 'heart-thralldom', 'love-sickness', 'passion'] },
-  hate: { common: ['despise', 'loathe', 'detest', 'abhor', 'resent'], poetic: ['execrate', 'contemn', 'view with scorn', 'feel enmity for', 'feel malice toward'], vivid: ['stomach-turning', 'blood-curdling', 'venom-spitting', 'cold-eyed', 'stone-hearted'], archaic: ['hold in abomination', 'bear ill will', 'forswear', 'be an enemy to', 'anathematize'] },
-  wonder: { common: ['amazement', 'awe', 'astonishment', 'fascination', 'admiration'], poetic: ['rapture', 'reverie', 'enchantment', 'bewilderment', 'stupefaction'], vivid: ['open-mouthed', 'eye-widening', 'breath-halting', 'star-struck', 'earth-stilling'], archaic: ['marvel', 'admiration', 'astonishment', 'wonderment', 'raptness'] },
-  hope: { common: ['optimism', 'expectation', 'wish', 'aspiration', 'desire'], poetic: ['yearning', 'longing', 'anticipation', 'promise', 'reverie'], vivid: ['candle-in-dark', 'dawn-seeking', 'seed-planting', 'cloud-breaking', 'star-fixed'], archaic: ['trust', 'expectancy', 'sanguinity', 'cheering belief', 'fond expectation'] },
-  fear: { common: ['dread', 'terror', 'fright', 'alarm', 'panic'], poetic: ['trepidation', 'horror', 'apprehension', 'foreboding', 'trembling'], vivid: ['cold-sweat', 'blood-draining', 'heart-hammering', 'shadow-stalked', 'bone-chilling'], archaic: ['dismay', 'affright', 'quaking', 'perturbation', 'sore fear'] },
-  longing: { common: ['yearning', 'desire', 'craving', 'pining', 'wishing'], poetic: ['wistfulness', 'nostalgia', 'aching want', 'heartfelt wish', 'soul-hunger'], vivid: ['heart-aching', 'shadow-reaching', 'horizon-gazing', 'arms-outstretched', 'dream-haunted'], archaic: ['pining', 'languishing', 'thirsting after', 'hungering for', 'sighing for'] },
-  // Nature
-  beautiful: { common: ['pretty', 'lovely', 'attractive', 'gorgeous', 'stunning'], poetic: ['ethereal', 'radiant', 'sublime', 'resplendent', 'enchanting'], vivid: ['breathtaking', 'soul-stirring', 'light-kissed', 'dream-woven', 'heart-stopping'], archaic: ['fair', 'comely', 'beauteous', 'lovely to behold', 'graceful'] },
   dark: { common: ['dim', 'shadowy', 'gloomy', 'murky', 'obscure'], poetic: ['tenebrous', 'stygian', 'crepuscular', 'light-forsaken', 'umbral'], vivid: ['pitch-black', 'starless', 'soul-dark', 'midnight-haunted', 'void-deep'], archaic: ['sable', 'ebon', 'waning', 'dusk-shrouded', 'night-bound'] },
+  love: { common: ['affection', 'devotion', 'adoration', 'fondness', 'tenderness'], poetic: ['amour', 'ardor', 'rapture', 'enchantment', 'besottedness'], vivid: ['heart-flame', 'soul-binding', 'star-crossed', 'deep-rooted', 'eternal'], archaic: ['courtship', 'wooing', 'heart-thralldom', 'love-sickness', 'passion'] },
+  beautiful: { common: ['pretty', 'lovely', 'attractive', 'gorgeous', 'stunning'], poetic: ['ethereal', 'radiant', 'sublime', 'resplendent', 'enchanting'], vivid: ['breathtaking', 'soul-stirring', 'light-kissed', 'dream-woven', 'heart-stopping'], archaic: ['fair', 'comely', 'beauteous', 'lovely to behold', 'graceful'] },
   night: { common: ['evening', 'darkness', 'twilight', 'dusk', 'midnight'], poetic: ['nocturne', 'gloaming', 'witching hour', 'dead of night', 'moonlit hours'], vivid: ['star-crowned', 'shadow-veiled', 'dream-draped', 'silence-wrapped', 'owl-haunted'], archaic: ['eve', 'nighttide', 'darkling hours', 'nightfall', 'black of night'] },
-  day: { common: ['daytime', 'morning', 'afternoon', 'sunlight', 'daylight'], poetic: ['radiant hours', 'sun-tide', 'light-filled span', 'golden hours', 'bright season'], vivid: ['sun-blazing', 'sky-wide', 'cloud-dappled', 'noon-high', 'light-singing'], archaic: ['the diurnal course', 'day-tide', 'the bright of day', 'light of day', 'sun-rise to sun-set'] },
+  walk: { common: ['stroll', 'amble', 'wander', 'stride', 'pace'], poetic: ['saunter', 'meander', 'promenade', 'perambulate', 'tread'], vivid: ['foot-fall', 'path-winding', 'leaf-crunching', 'dawn-breaking', 'slow-drifting'], archaic: ['peregrinate', 'go afoot', 'take the air', 'perambulation', 'tramp'] },
   water: { common: ['liquid', 'aqua', 'moisture', 'fluid', 'wetness'], poetic: ['brine', 'deep', 'main', 'billow', 'tide'], vivid: ['silver-stream', 'crystal-cascade', 'wave-whispered', 'foam-kissed', 'river-winding'], archaic: ['element', 'humour', 'watery realm', 'briny deep', 'aqua vitae'] },
   light: { common: ['brightness', 'illumination', 'radiance', 'glow', 'shine'], poetic: ['luminosity', 'effulgence', 'refulgence', 'incandescence', 'phosphorescence'], vivid: ['sun-gold', 'dawn-break', 'star-dust', 'flame-bright', 'soul-illuminating'], archaic: ['lustre', 'sheen', 'daylight', 'candle-glow', 'heavenly radiance'] },
   wind: { common: ['breeze', 'gale', 'gust', 'air', 'zephyr'], poetic: ['tempest', 'squall', 'whisper', 'sigh', 'breath'], vivid: ['leaf-rustling', 'hair-tousling', 'cloud-chasing', 'song-singing', 'wild-roaming'], archaic: ['aeolus', 'boreas', 'zephyrus', 'gale-force', 'whistling air'] },
-  rain: { common: ['drizzle', 'downpour', 'shower', 'precipitation', 'rainfall'], poetic: ['weeping sky', 'silver needles', "heaven's tears", 'pluvial grace', 'the deluge'], vivid: ['patter-drumming', 'earth-kissing', 'cold-veiling', 'roof-hammering', 'leaf-bending'], archaic: ['pluvious shower', 'soft rain', 'the rains', 'descending waters', 'sky-weeping'] },
-  snow: { common: ['flakes', 'frost', 'powder', 'sleet', 'blizzard'], poetic: ['crystal veil', 'white silence', "heaven's fleece", 'winter mantle', 'alabaster fall'], vivid: ['hush-blanketing', 'sky-spinning', 'cold-kissing', 'world-whitening', 'soft-falling'], archaic: ['white precipitation', 'wintry fall', 'clean white', 'snowy fleece', "winter's down"] },
-  sea: { common: ['ocean', 'water', 'waves', 'deep', 'expanse'], poetic: ['brine', 'main', 'deep', 'billows', 'the vast'], vivid: ['salt-dark', 'wave-rolling', 'tide-pulled', 'storm-tossed', 'horizon-endless'], archaic: ['the deep', 'the main', 'the briny', 'the boundless deep', 'watery waste'] },
-  sky: { common: ['heavens', 'firmament', 'atmosphere', 'space', 'air'], poetic: ['welkin', 'empyrean', 'azure', 'celestial sphere', 'vault of heaven'], vivid: ['cloud-canvas', 'star-field', 'blue-expanse', 'sun-throne', 'bird-domain'], archaic: ['heaven', 'firmament', 'vault', 'canopy', 'celestial dome'] },
-  fire: { common: ['flame', 'blaze', 'inferno', 'conflagration', 'burning'], poetic: ['pyre', 'ember', 'conflagration', 'blazing tongue', 'immolation'], vivid: ['crackling', 'devouring', 'dancing', 'roaring', 'all-consuming'], archaic: ['brand', 'hearth-fire', 'element', 'ignis', 'sacred flame'] },
-  storm: { common: ['tempest', 'squall', 'gale', 'thunderstorm', 'hurricane'], poetic: ['the great turbulence', 'wrathful sky', 'nature\'s fury', 'elemental war', 'chaos-wind'], vivid: ['lightning-splitting', 'thunder-rolling', 'world-shaking', 'rain-lashing', 'sky-tearing'], archaic: ['tempest', 'the great wind', 'blustering storm', 'the roaring gale', 'heaven\'s wrath'] },
-  forest: { common: ['woods', 'woodland', 'grove', 'trees', 'thicket'], poetic: ['greenwood', 'sylvan haunt', 'bosky dell', 'leafy realm', 'the deep wood'], vivid: ['shadow-roofed', 'moss-carpeted', 'bird-haunted', 'dew-wet', 'sun-dappled'], archaic: ['the wildwood', 'the greenwood', 'sylvan retreat', 'arboreal realm', 'the weald'] },
-  moon: { common: ['crescent', 'full moon', 'half-moon', 'moonlight', 'lunar orb'], poetic: ['Cynthia', 'silver queen', 'pale orb', "night's lamp", 'Diana'], vivid: ['cold-bright', 'tide-pulling', 'dream-spilling', 'cloud-sailing', 'silver-flooding'], archaic: ['Selene', 'the pale wanderer', 'Luna', "night's eye", 'Phoebe'] },
-  star: { common: ['celestial body', 'planet', 'constellation', 'point of light', 'luminary'], poetic: ['astral flame', "heaven's eye", "lamp of night", 'burning point', 'sidereal light'], vivid: ['cold-blazing', 'pinhole-bright', 'ice-white', 'distance-burning', 'sky-fixed'], archaic: ['wandering star', 'fixed star', 'celestial sphere', 'luminary', "heaven's lantern"] },
-  flower: { common: ['blossom', 'bloom', 'petal', 'rose', 'bud'], poetic: ["earth's ornament", "nature's gem", 'meadow beauty', 'floral jewel', 'sylvan gift'], vivid: ['color-bursting', 'dew-jeweled', 'bee-loved', 'scent-breathing', 'spring-born'], archaic: ['fleur', 'posie', 'bloom of the field', "nature's ornament", 'fairest growth'] },
-  // Abstract concepts
-  time: { common: ['period', 'duration', 'moment', 'era', 'age'], poetic: ['tempus', 'chronos', 'eon', 'epoch', 'span'], vivid: ['sand-falling', 'clock-ticking', 'sun-cycling', 'season-turning', 'life-measuring'], archaic: ['hour', 'tide', 'season', 'while', 'space'] },
-  death: { common: ['end', 'passing', 'dying', 'demise', 'departure'], poetic: ['final sleep', 'the great crossing', 'night without dawn', 'eternal rest', 'dissolution'], vivid: ['cold-stillness', 'breath-ceasing', 'light-fading', 'silence-falling', 'shadow-drawing'], archaic: ['the grim reaper', 'the pale rider', 'fate', 'the end of days', 'the final rest'] },
-  life: { common: ['existence', 'being', 'living', 'vitality', 'animation'], poetic: ['the span of days', 'breath of being', 'vital flame', 'mortal coil', 'living fire'], vivid: ['pulse-beating', 'breath-drawing', 'sun-chasing', 'world-inhabiting', 'time-threading'], archaic: ['the temporal span', 'this mortal life', 'the years allotted', 'earthly sojourn', 'this vale'] },
-  truth: { common: ['fact', 'reality', 'accuracy', 'honesty', 'sincerity'], poetic: ['veritas', 'the unerring light', 'naked truth', 'clear mirror', 'unadorned word'], vivid: ['plain-spoken', 'veil-lifting', 'blindfold-removing', 'light-casting', 'mirror-clear'], archaic: ['sooth', 'verity', 'troth', 'the plain truth', 'what is so'] },
-  beauty: { common: ['loveliness', 'attractiveness', 'elegance', 'grace', 'charm'], poetic: ['radiance', 'splendor', 'sublimity', 'pulchritude', 'ethereal grace'], vivid: ['eye-halting', 'breath-catching', 'heart-lifting', 'soul-stirring', 'vision-haunting'], archaic: ['fairness', 'comeliness', 'seemliness', 'pulchritude', 'grace of form'] },
-  soul: { common: ['spirit', 'self', 'inner being', 'essence', 'consciousness'], poetic: ['anima', 'psyche', 'inmost self', 'vital spark', 'breath of God'], vivid: ['deep-center', 'silence-dwelling', 'body-beyond', 'breath-animating', 'heart-core'], archaic: ['the animating principle', 'the vital breath', 'the inner man', 'the spirit within', 'ghost'] },
-  memory: { common: ['recollection', 'remembrance', 'recall', 'reminiscence', 'reflection'], poetic: ['ghost of the past', 'echo of time', 'shadow revisited', 'dream re-lived', 'imprint of the heart'], vivid: ['vivid-remaining', 'time-preserved', 'dream-visiting', 'faded-but-felt', 'sense-triggered'], archaic: ['remembrance', 'reminiscence', "the mind's eye", 'fond recollection', 'the backward glance'] },
-  silence: { common: ['quiet', 'stillness', 'hush', 'calm', 'peace'], poetic: ['eloquent void', 'speaking nothingness', 'profound quiet', 'holy stillness', 'the great pause'], vivid: ['breath-holding', 'sound-swallowing', 'world-stopping', 'ear-aching', 'snow-deep'], archaic: ['the great quietude', 'hushed repose', 'solemn stillness', 'dead calm', 'the silent hour'] },
-  dream: { common: ['vision', 'fantasy', 'reverie', 'aspiration', 'hope'], poetic: ['phantasm', 'somnium', 'idle fancy', 'waking dream', 'chimera'], vivid: ['sleep-woven', 'night-born', 'star-sent', 'soul-wandering', 'mind-painting'], archaic: ['slumber-vision', 'fancy', 'revelation', 'prophecy', 'apparition'] },
-  heart: { common: ['core', 'center', 'soul', 'spirit', 'essence'], poetic: ['bosom', 'breast', 'inmost being', 'seat of feeling', 'cardia'], vivid: ['life-pump', 'blood-chamber', 'emotion-well', 'love-source', 'soul-dwelling'], archaic: ['ticker', 'vital organ', 'inward', 'breast', 'bosom'] },
-  fate: { common: ['destiny', 'fortune', 'luck', 'doom', 'lot'], poetic: ['the Fates', 'the spinning thread', 'the woven end', 'Moira', 'that which is written'], vivid: ['inexorable path', 'blind-guided', 'star-determined', 'thread-cut', 'written-in-dark'], archaic: ['wyrd', "fortune's wheel", 'the Norns', 'kismet', 'decreed by the stars'] },
-  // Actions
-  walk: { common: ['stroll', 'amble', 'wander', 'stride', 'pace'], poetic: ['saunter', 'meander', 'promenade', 'perambulate', 'tread'], vivid: ['foot-fall', 'path-winding', 'leaf-crunching', 'dawn-breaking', 'slow-drifting'], archaic: ['peregrinate', 'go afoot', 'take the air', 'perambulation', 'tramp'] },
-  speak: { common: ['say', 'talk', 'utter', 'express', 'voice'], poetic: ['intone', 'declaim', 'proclaim', 'breathe', 'whisper to the ages'], vivid: ['word-weaving', 'tongue-turning', 'voice-lifting', 'sound-making', 'lip-parting'], archaic: ['quoth', 'spake', 'bespake', 'gave utterance', 'gave voice'] },
-  see: { common: ['view', 'observe', 'notice', 'behold', 'perceive'], poetic: ['descry', 'espy', 'witness', 'contemplate', 'feast the eyes on'], vivid: ['eye-fixed', 'gaze-alighting', 'world-drinking', 'light-catching', 'vision-receiving'], archaic: ['behold', 'ken', 'spy', 'take note of', 'have sight of'] },
-  die: { common: ['perish', 'expire', 'pass away', 'decease', 'succumb'], poetic: ['demise', 'depart', 'cross over', "meet one's end", "breathe one's last"], vivid: ['light-fading', 'breath-stilling', 'soul-releasing', 'shadow-falling', 'final-sleep'], archaic: ['perish', 'yield the ghost', 'go the way of all flesh', 'pay the debt of nature', 'join the majority'] },
-  rise: { common: ['ascend', 'climb', 'go up', 'soar', 'lift'], poetic: ['mount', 'tower', 'transcend', 'scale the heights', 'soar aloft'], vivid: ['sky-reaching', 'earth-leaving', 'cloud-piercing', 'height-gaining', 'dawn-like'], archaic: ['get up', 'arise', 'mount heavenward', 'lift oneself', 'spring up'] },
-  shine: { common: ['glow', 'gleam', 'glimmer', 'sparkle', 'radiate'], poetic: ['blaze', 'effulge', 'irradiate', 'illuminate', 'burn clear'], vivid: ['light-pouring', 'gold-casting', 'brilliance-sending', 'eye-dazzling', 'dark-cutting'], archaic: ['glisten', 'coruscate', 'give out light', 'be refulgent', 'shed lustre'] },
-  weep: { common: ['cry', 'sob', 'wail', 'mourn', 'lament'], poetic: ['shed tears', 'dissolve in grief', 'pour forth sorrow', 'keen', 'ululate'], vivid: ['tear-streaming', 'shoulder-shaking', 'heart-breaking', 'grief-voicing', 'sorrow-shedding'], archaic: ['bewail', 'bemoan', 'make lamentation', 'shed bitter tears', 'grieve sore'] },
-  // Qualities
   old: { common: ['aged', 'elderly', 'ancient', 'mature', 'senior'], poetic: ['venerable', 'time-worn', 'antiquated', 'hoary', 'patriarchal'], vivid: ['silver-haired', 'wrinkle-etched', 'memory-rich', 'wisdom-keeping', 'century-marked'], archaic: ['greybeard', 'ancient', 'of yore', 'long in the tooth', 'seasoned'] },
   cold: { common: ['chilly', 'frigid', 'freezing', 'icy', 'cool'], poetic: ['gelid', 'glacial', 'wintry', 'frost-bound', 'arctic'], vivid: ['bone-chilling', 'breath-misting', 'frost-nipped', 'shiver-inducing', 'winter-bitten'], archaic: ['raw', 'bleak', 'biting', 'nipping', 'frore'] },
-  hot: { common: ['warm', 'burning', 'scorching', 'blazing', 'fiery'], poetic: ['ardent', 'fervent', 'incandescent', 'torrid', 'igneous'], vivid: ['sun-baked', 'flame-touched', 'heat-shimmering', 'sweat-drawing', 'fire-kissed'], archaic: ['sweltering', 'blistering', 'torrid', 'fervid', 'calid'] },
   red: { common: ['crimson', 'scarlet', 'maroon', 'ruby', 'cherry'], poetic: ['vermilion', 'gules', 'carmine', 'sanguine', 'ruddy'], vivid: ['blood-bright', 'fire-hot', 'rose-deep', 'sunset-stained', 'heart-beat'], archaic: ['ruddy', 'rosy', 'florid', 'sanguineous', 'incarnadine'] },
   white: { common: ['pale', 'snowy', 'ivory', 'cream', 'milky'], poetic: ['alabaster', 'argent', 'pearly', 'hoary', 'candid'], vivid: ['moon-glow', 'cloud-soft', 'star-pale', 'swan-down', 'frost-pure'], archaic: ['fair', 'snow-white', 'milky-white', 'argent', 'crystal'] },
-  black: { common: ['dark', 'ebony', 'jet', 'onyx', 'obsidian'], poetic: ['sable', 'stygian', 'raven-dark', 'pitch', 'midnight-hued'], vivid: ['light-devouring', 'ink-deep', 'void-dark', 'night-absolute', 'shadow-pure'], archaic: ['sable', 'swart', 'ebon', 'coal-black', 'murky'] },
-  bright: { common: ['shining', 'luminous', 'radiant', 'gleaming', 'brilliant'], poetic: ['resplendent', 'effulgent', 'incandescent', 'lustrous', 'dazzling'], vivid: ['eye-aching', 'star-like', 'sun-matching', 'light-pouring', 'glory-spreading'], archaic: ['beaming', 'glowing', 'lustrous', 'refulgent', 'aureate'] },
-  quiet: { common: ['silent', 'still', 'hushed', 'peaceful', 'calm'], poetic: ['voiceless', 'noiseless', 'tranquil', 'serene', 'low-spoken'], vivid: ['breath-soft', 'pin-drop', 'snowfall-quiet', 'tomb-still', 'feather-light'], archaic: ["hush'd", 'stilly', 'keeping mum', 'still as death', 'without sound'] },
-  swift: { common: ['fast', 'quick', 'rapid', 'speedy', 'brisk'], poetic: ['fleet', 'nimble', 'mercurial', 'arrow-swift', 'wind-like'], vivid: ['blur-making', 'time-compressing', 'breath-stealing', 'eye-defeating', 'heartbeat-quick'], archaic: ['fleet of foot', 'apace', 'like lightning', 'with speed', 'with post-haste'] },
-  deep: { common: ['profound', 'intense', 'vast', 'fathomless', 'immeasurable'], poetic: ['abyssal', 'unfathomable', 'bottomless', 'oceanic', 'infinite in depth'], vivid: ['world-swallowing', 'abyss-like', 'ocean-dark', 'gravity-heavy', 'core-reaching'], archaic: ['of great profundity', 'fathomless', 'abyssal depth', 'the deep and trackless', 'surpassing deep'] },
-  wild: { common: ['fierce', 'untamed', 'savage', 'uncontrolled', 'turbulent'], poetic: ['feral', 'untamed', 'primordial', 'storm-born', 'lawless'], vivid: ['wind-tangled', 'thorn-tangled', 'beast-roamed', 'storm-lashed', 'free-running'], archaic: ['uncouth', 'unruly', 'ungoverned', 'savage', 'the wild'] },
+  sky: { common: ['heavens', 'firmament', 'atmosphere', 'space', 'air'], poetic: ['welkin', 'empyrean', 'azure', 'celestial sphere', 'vault of heaven'], vivid: ['cloud-canvas', 'star-field', 'blue-expanse', 'sun-throne', 'bird-domain'], archaic: ['heaven', 'firmament', 'vault', 'canopy', 'celestial dome'] },
+  time: { common: ['period', 'duration', 'moment', 'era', 'age'], poetic: ['tempus', 'chronos', 'eon', 'epoch', 'span'], vivid: ['sand-falling', 'clock-ticking', 'sun-cycling', 'season-turning', 'life-measuring'], archaic: ['hour', 'tide', 'season', 'while', 'space'] },
+  die: { common: ['perish', 'expire', 'pass away', 'decease', 'succumb'], poetic: ['demise', 'depart', 'cross over', "meet one's end", "breathe one's last"], vivid: ['light-fading', 'breath-stilling', 'soul-releasing', 'shadow-falling', 'final-sleep'], archaic: ['perish', 'yield the ghost', 'go the way of all flesh', 'pay the debt of nature', 'join the majority'] },
+  fire: { common: ['flame', 'blaze', 'inferno', 'conflagration', 'burning'], poetic: ['pyre', 'ember', 'conflagration', 'holocaust', 'immolation'], vivid: ['crackling', 'devouring', 'dancing', 'roaring', 'all-consuming'], archaic: ['brand', 'hearth-fire', 'element', 'ignis', 'sacred flame'] },
+  heart: { common: ['core', 'center', 'soul', 'spirit', 'essence'], poetic: ['bosom', 'breast', 'inmost being', 'seat of feeling', 'cardia'], vivid: ['life-pump', 'blood-chamber', 'emotion-well', 'love-source', 'soul-dwelling'], archaic: ['ticker', 'vital organ', 'inward', 'breast', 'bosom'] },
+  dream: { common: ['vision', 'fantasy', 'reverie', 'aspiration', 'hope'], poetic: ['phantasm', 'somnium', 'idle fancy', 'waking dream', 'chimera'], vivid: ['sleep-woven', 'night-born', 'star-sent', 'soul-wandering', 'mind-painting'], archaic: ['slumber-vision', 'fancy', 'revelation', 'prophecy', 'apparition'] },
 }
 
 // ─── CMU rhyme groups (module-level — computed once) ──────────────────────────
@@ -215,7 +172,7 @@ function RhymeTab({ rhymeInput, setRhymeInput, rhymeResults, isSearchingRhymes, 
 interface SyllableTabProps {
   syllableInput: string
   setSyllableInput: (v: string) => void
-  syllableCount: number | null
+  syllableCount: number
   syllableBreakdown: { word: string; count: number }[]
   haikuCheck: { isHaiku: boolean; pattern: number[] } | null
   onCount: () => void
@@ -238,7 +195,7 @@ function SyllableTab({ syllableInput, setSyllableInput, syllableCount, syllableB
         autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
       />
       <button onClick={onCount} className="poetry-button w-full">Count Syllables</button>
-      {syllableCount !== null && syllableCount > 0 && (
+      {syllableCount > 0 && (
         <div className="animate-fade-in space-y-4">
           <div className="ornament">✦</div>
           <div className="poetry-card text-center">
@@ -391,7 +348,6 @@ function ThesaurusTab({ thesaurusInput, setThesaurusInput, thesaurusResult, sugg
 
 interface DictionaryTabProps {
   dictInput: string
-  setDictInput: (v: string) => void
   dictResults: DictionaryEntry[]
   selectedWord: DictionaryEntry | null
   onSearch: () => void
@@ -467,7 +423,7 @@ interface WorkshopTabProps {
   setPoemInput: (v: string) => void
   workshopResult: string | null
   workshopMode: 'meter' | 'form' | 'stats' | 'sound'
-  setWorkshopMode: (mode: 'meter' | 'form' | 'stats' | 'sound') => void
+  setWorkshopMode: (m: 'meter' | 'form' | 'stats' | 'sound') => void
   onAnalyze: () => void
   inputRef: React.RefObject<HTMLTextAreaElement | null>
 }
@@ -516,6 +472,7 @@ function WorkshopTab({ poemInput, setPoemInput, workshopResult, workshopMode, se
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 function App() {
+  const [showSplash, setShowSplash] = useState(true)
   const [activeTab, setActiveTab] = useState<TabType>('rhymes')
   const [toastMsg, setToastMsg] = useState<string | null>(null)
 
@@ -744,6 +701,7 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {showSplash && <SplashScreen onFinished={() => setShowSplash(false)} />}
       <header className="sticky top-0 z-40 bg-parchment/95 backdrop-blur-md border-b border-gold/20 safe-area-pt">
         <div className="max-w-3xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -783,7 +741,7 @@ function App() {
         )}
         {activeTab === 'dictionary' && (
           <DictionaryTab
-            dictInput={dictInput} setDictInput={setDictInput}
+            dictInput={dictInput}
             dictResults={dictResults} selectedWord={selectedWord}
             onSearch={searchDict} onSearchChange={handleDictChange}
             onSelect={selectWord} onCopy={copyToClipboard} inputRef={dictInputRef}

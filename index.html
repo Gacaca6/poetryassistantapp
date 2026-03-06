@@ -84,24 +84,30 @@
     href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
     rel="stylesheet" />
 
-  <!-- Inline critical CSS: dark splash background shown before JS loads.
-         This prevents a white flash on iPhone between native OS splash and React mount. -->
+  <!-- Inline critical CSS: prevents white flash before JS loads on iPhone.
+       IMPORTANT: only set dark bg on <html> (the page shell), NOT on body/#root,
+       so the app's own parchment theme from index.css applies correctly. -->
   <style>
+    /* Dark bg on html only — stops white flash before React mounts */
+    html {
+      background: #1a1209;
+    }
+
     html,
     body,
     #root {
       margin: 0;
       padding: 0;
       height: 100%;
-      background: #1a1209;
-      /* safe-area-inset for iPhone notch / Dynamic Island / home bar */
-      padding-top: env(safe-area-inset-top);
-      padding-bottom: env(safe-area-inset-bottom);
-      padding-left: env(safe-area-inset-left);
-      padding-right: env(safe-area-inset-right);
     }
 
-    /* Prevent iOS rubber-band scroll from exposing background */
+    /* Let the app's own CSS own body/root background — do NOT set it here */
+    body,
+    #root {
+      background: transparent;
+    }
+
+    /* Prevent iOS rubber-band scroll exposing raw page bg */
     body {
       overscroll-behavior: none;
     }
