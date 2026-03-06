@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef } from 'react'
-import SplashScreen from './components/SplashScreen'
 import {
   Music, BookOpen, PenTool, Search,
   Copy, Check, Sparkles, AlignLeft,
@@ -472,7 +471,6 @@ function WorkshopTab({ poemInput, setPoemInput, workshopResult, workshopMode, se
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 function App() {
-  const [showSplash, setShowSplash] = useState(true)
   const [activeTab, setActiveTab] = useState<TabType>('rhymes')
   const [toastMsg, setToastMsg] = useState<string | null>(null)
 
@@ -701,7 +699,6 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {showSplash && <SplashScreen onFinished={() => setShowSplash(false)} />}
       <header className="sticky top-0 z-40 bg-parchment/95 backdrop-blur-md border-b border-gold/20 safe-area-pt">
         <div className="max-w-3xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
